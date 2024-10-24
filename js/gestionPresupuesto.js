@@ -19,12 +19,12 @@ function mostrarPresupuesto() {
     console.log("Tu presupuesto actual es de: " + presupuesto + " €");
 }
 
-function CrearGasto() {
+function CrearGasto(descripcion, valor, fecha, ...etiquetas) {
     let Gasto = {
-        descripcion: "",
+        descripcion: descripcion,
         valor: Number(valor),
-        fecha: Date.parse(datestring) || Date.now(),
-        etiquetas:  [],
+        fecha: Date.parse(fecha) || Date.now(),
+        etiquetas: etiquetas,
         mostrarGasto: function () {
             console.log(`Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €`);
         },
@@ -39,42 +39,39 @@ function CrearGasto() {
             }
         },
         actualizarFecha: function (nuevaFechaString) {
-            let nuevafecha =  Date.parse(nuevaFechaString);
+            let nuevafecha = Date.parse(nuevaFechaString);
             this.fecha = !isNaN(nuevafecha) ? nuevafecha : Date.now();
         },
         anyadirEtiquetas: function(...nuevasEtiquetas) {
             this.etiquetas.push(...nuevasEtiquetas); // Añade nuevas etiquetas al array existente
-    },
-    mostrarGastoCompleto: function () 
-    {
-        let etiquetasTexto = "No hay etiquetas.";
-        if (this.etiquetas.length > 0) {
-            etiquetasTexto = "";
-            for (let i = 0; i < this.etiquetas.length; i++) {
-                etiquetasTexto += `${this.etiquetas[i]}\n`;
+        },
+        mostrarGastoCompleto: function () {
+            let etiquetasTexto = "No hay etiquetas.";
+            if (this.etiquetas.length > 0) {
+                etiquetasTexto = "";
+                for (let i = 0; i < this.etiquetas.length; i++) {
+                    etiquetasTexto += ` - ${this.etiquetas[i]}\n`;
+                }
             }
+            return `Gasto correspondiente a "${this.descripcion}" con valor ${this.valor} €.\n` +
+                   `Fecha: ${new Date(this.fecha).toLocaleDateString()}\n` +
+                   `Etiquetas:\n${etiquetasTexto}`;
         }
-        return `Gasto correspondiente a "${this.descripcion}" con valor ${this.valor} €.\n` +
-               `Fecha: ${new Date(this.fecha).toLocaleDateString()}\n` +
-               `Etiquetas:\n${etiquetasTexto}`;
-    }
-}
+    };
     return Gasto;
 }
-function listarGastos () 
-{
+
+function listarGastos() {
     return gastos;
 }
 
-function anyadirGasto (gasto)
-{
-gasto.id = idgastos;
-idgastos++;
-gastos.push(gasto)
+function anyadirGasto(gasto) {
+    gasto.id = idgastos;
+    idgastos++;
+    gastos.push(gasto);
 }
 
-function borrarGasto(id)
- {
+function borrarGasto(id) {
     let indice = gastos.findIndex(gasto => gasto.id === id);
 
     if (indice >= 0) {
@@ -83,24 +80,26 @@ function borrarGasto(id)
         console.log("No existe el gasto con el id introducidio.");
     }
 }
-function calcularTotalGastos()
-{
+
+function calcularTotalGastos() {
     let total = 0;
-    for (let i of gastos)
-        {
-            total += i.valor;
-        }
-    return total
+    for (let i of gastos) {
+        total += i.valor;
+    }
+    return total;
 }
-function calcularBalance()
-{
+
+function calcularBalance() {
     return presupuesto - calcularTotalGastos();
 }
+
 
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
 export   {
+    filtrarGastos,
+    agruparGastos,
     listarGastos,
     anyadirGasto,
     borrarGasto, 
