@@ -115,8 +115,8 @@ function calcularBalance() {
 let gasto1 = new CrearGasto("luz", 60, "01/10/2024");
 anyadirGasto(gasto1);
 
-console.log(mostrarPresupuesto()); // Debe mostrar: "Tu presupuesto actual es de: 0 €"
-console.log(gasto1.mostrarGasto()); // Debe mostrar el gasto correctamente
+console.log(mostrarPresupuesto());
+console.log(gasto1.mostrarGasto()); 
 
 
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
