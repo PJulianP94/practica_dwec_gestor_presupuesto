@@ -1,13 +1,15 @@
 // TODO: Crear las funciones, objetos y variables indicadas en el enunciado
 
 // TODO: Variable global
+// Variables globales
 let presupuesto = 0;
 let gastos = [];
-let idgastos = 0;
+let idGasto = 0;
 
+// Funciones
 function actualizarPresupuesto(nuevopresupuesto) {
-    if (nuevopresupuesto >= 0) { 
-        presupuesto = nuevopresupuesto; 
+    if (nuevopresupuesto >= 0) {
+        presupuesto = nuevopresupuesto;
         return presupuesto;
     } else {
         console.log("El presupuesto es negativo");
@@ -19,72 +21,78 @@ function mostrarPresupuesto() {
     console.log("Tu presupuesto actual es de: " + presupuesto + " €");
 }
 
-function CrearGasto(descripcion, valor, fecha, ...etiquetas) {
-    let Gasto = {
-        descripcion: descripcion,
-        valor: Number(valor),
-        fecha: Date.parse(fecha) || Date.now(),
-        etiquetas: etiquetas,
-        mostrarGasto: function () {
-            console.log(`Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €`);
-        },
-        actualizarDescripcion: function (nuevadescripcion) {
-            this.descripcion = nuevadescripcion;
-        },
-        actualizarValor: function (nuevovalor) {
-            if (nuevovalor >= 0) {
-                this.valor = nuevovalor;
-            } else {
-                console.log("El valor no puede ser negativo");
-            }
-        },
-        actualizarFecha: function (nuevaFechaString) {
-            let nuevafecha = Date.parse(nuevaFechaString);
-            this.fecha = !isNaN(nuevafecha) ? nuevafecha : Date.now();
-        },
-        anyadirEtiquetas: function(...nuevasEtiquetas) {
-            this.etiquetas.push(...nuevasEtiquetas); // Añade nuevas etiquetas al array existente
-        },
-        mostrarGastoCompleto: function () {
-            let etiquetasTexto = "No hay etiquetas.";
-            if (this.etiquetas.length > 0) {
-                etiquetasTexto = "";
-                for (let i = 0; i < this.etiquetas.length; i++) {
-                    etiquetasTexto += ` - ${this.etiquetas[i]}\n`;
-                }
-            }
-            return `Gasto correspondiente a "${this.descripcion}" con valor ${this.valor} €.\n` +
-                   `Fecha: ${new Date(this.fecha).toLocaleDateString()}\n` +
-                   `Etiquetas:\n${etiquetasTexto}`;
-        }
-    };
-    return Gasto;
+// Función constructora para crear un objeto Gasto
+function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiquetas) {
+    this.id = idGasto++;
+    this.descripcion = descripcion;
+    this.valor = (valor >= 0) ? Number(valor) : 0;
+    this.fecha = Date.parse(fecha) || Date.now();
+    this.etiquetas = etiquetas.length > 0 ? etiquetas : [];
 }
 
+// Métodos del objeto Gasto en el prototype
+CrearGasto.prototype.mostrarGastoCompleto = function() {
+    let etiquetasTexto = "No hay etiquetas.";
+    if (this.etiquetas.length > 0) {
+        etiquetasTexto = "";
+        for (let i = 0; i < this.etiquetas.length; i++) {
+            etiquetasTexto += ` - ${this.etiquetas[i]}\n`;
+        }
+    }
+    return `Gasto correspondiente a "${this.descripcion}" con valor ${this.valor} €.\n` +
+           `Fecha: ${new Date(this.fecha).toLocaleString()}\n` +
+           `Etiquetas:\n${etiquetasTexto}`;
+};
+
+CrearGasto.prototype.actualizarFecha = function(nuevaFechaString) {
+    let nuevaFecha = Date.parse(nuevaFechaString);
+    if (!isNaN(nuevaFecha)) {
+        this.fecha = nuevaFecha;
+    }
+};
+
+CrearGasto.prototype.anyadirEtiquetas = function(...nuevasEtiquetas) {
+    for (let i = 0; i < nuevasEtiquetas.length; i++) {
+        if (!this.etiquetas.includes(nuevasEtiquetas[i])) {
+            this.etiquetas.push(nuevasEtiquetas[i]);
+        }
+    }
+};
+
+CrearGasto.prototype.borrarEtiquetas = function(...etiquetasAEliminar) {
+    for (let i = 0; i < this.etiquetas.length; i++) {
+        if (etiquetasAEliminar.includes(this.etiquetas[i])) {
+            this.etiquetas.splice(i, 1);
+            i--; 
+        }
+    }
+};
+
+// Funciones para gestionar gastos
 function listarGastos() {
     return gastos;
 }
 
 function anyadirGasto(gasto) {
-    gasto.id = idgastos;
-    idgastos++;
+    // 1. Añadir la propiedad id al gasto
+    gasto.id = idGasto;
+    idGasto++;
     gastos.push(gasto);
 }
 
 function borrarGasto(id) {
     let indice = gastos.findIndex(gasto => gasto.id === id);
-
     if (indice >= 0) {
         gastos.splice(indice, 1);
     } else {
-        console.log("No existe el gasto con el id introducidio.");
+        console.log("No existe el gasto con el id introducido.");
     }
 }
 
 function calcularTotalGastos() {
     let total = 0;
-    for (let i of gastos) {
-        total += i.valor;
+    for (let i = 0; i < gastos.length; i++) {
+        total += gastos[i].valor;
     }
     return total;
 }
@@ -92,6 +100,11 @@ function calcularTotalGastos() {
 function calcularBalance() {
     return presupuesto - calcularTotalGastos();
 }
+
+// Ejemplo de uso
+let gasto1 = new CrearGasto("Alquiler", 500);
+let gasto2 = new CrearGasto("Comida", 100, "2021-10-06T13:10", "supermercado");
+anyadirGasto(gasto1);
 
 
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
