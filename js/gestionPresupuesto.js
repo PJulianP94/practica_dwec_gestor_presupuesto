@@ -5,11 +5,10 @@
 let presupuesto = 0;
 let gastos = [];
 let idGasto = 0;
-
 // Funciones
-function actualizarPresupuesto(nuevopresupuesto) {
-    if (nuevopresupuesto >= 0) {
-        presupuesto = nuevopresupuesto;
+function actualizarPresupuesto(valorNuevopresupuesto) {
+    if (valorNuevopresupuesto >= 0) {
+        presupuesto = valorNuevopresupuesto;
         return presupuesto;
     } else {
         console.log("El presupuesto es negativo");
@@ -18,12 +17,11 @@ function actualizarPresupuesto(nuevopresupuesto) {
 }
 
 function mostrarPresupuesto() {
-    console.log("Tu presupuesto actual es de: " + presupuesto + " €");
+    return "Tu presupuesto actual es de: " + presupuesto + " €";
 }
 
 // Función constructora para crear un objeto Gasto
 function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiquetas) {
-    this.id = idGasto++;
     this.descripcion = descripcion;
     this.valor = (valor >= 0) ? Number(valor) : 0;
     this.fecha = Date.parse(fecha) || Date.now();
@@ -31,6 +29,21 @@ function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiqueta
 }
 
 // Métodos del objeto Gasto en el prototype
+CrearGasto.prototype.mostrarGasto = function ()
+{
+return `Gasto correspondiente a "${this.descripcion}" con valor: "${this.valor} €`;
+}
+CrearGasto.prototype.actualizarDescripcion = function (nuevaDescripcion) 
+{
+    this.descripcion = nuevaDescripcion;
+}
+CrearGasto.prototype.actualizarValor = function (nuevoValor) 
+{
+    if(nuevoValor >= 0)
+        this.valor = nuevoValor;
+    else
+    this.valor = this.valor;
+}
 CrearGasto.prototype.mostrarGastoCompleto = function() {
     let etiquetasTexto = "No hay etiquetas.";
     if (this.etiquetas.length > 0) {
@@ -68,13 +81,11 @@ CrearGasto.prototype.borrarEtiquetas = function(...etiquetasAEliminar) {
     }
 };
 
-// Funciones para gestionar gastos
 function listarGastos() {
     return gastos;
 }
 
 function anyadirGasto(gasto) {
-    // 1. Añadir la propiedad id al gasto
     gasto.id = idGasto;
     idGasto++;
     gastos.push(gasto);
@@ -101,18 +112,18 @@ function calcularBalance() {
     return presupuesto - calcularTotalGastos();
 }
 
-// Ejemplo de uso
-let gasto1 = new CrearGasto("Alquiler", 500);
-let gasto2 = new CrearGasto("Comida", 100, "2021-10-06T13:10", "supermercado");
+let gasto1 = new CrearGasto("luz", 60, "01/10/2024");
 anyadirGasto(gasto1);
+
+console.log(mostrarPresupuesto()); // Debe mostrar: "Tu presupuesto actual es de: 0 €"
+console.log(gasto1.mostrarGasto()); // Debe mostrar el gasto correctamente
 
 
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
 export   {
-    filtrarGastos,
-    agruparGastos,
+
     listarGastos,
     anyadirGasto,
     borrarGasto, 
