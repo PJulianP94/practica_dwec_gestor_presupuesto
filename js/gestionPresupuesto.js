@@ -17,7 +17,7 @@ function actualizarPresupuesto(valorNuevopresupuesto) {
 }
 
 function mostrarPresupuesto() {
-    return "Tu presupuesto actual es de: " + presupuesto + " €";
+    return "Tu presupuesto actual es de " + presupuesto + " €";
 }
 
 // Función constructora para crear un objeto Gasto
@@ -31,7 +31,7 @@ function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiqueta
 // Métodos del objeto Gasto en el prototype
 CrearGasto.prototype.mostrarGasto = function ()
 {
-return `Gasto correspondiente a "${this.descripcion}" con valor: "${this.valor} €`;
+return `Gasto correspondiente a ${this.descripcion} con valor: ${this.valor} €`;
 }
 CrearGasto.prototype.actualizarDescripcion = function (nuevaDescripcion) 
 {
@@ -49,10 +49,10 @@ CrearGasto.prototype.mostrarGastoCompleto = function() {
     if (this.etiquetas.length > 0) {
         etiquetasTexto = "";
         for (let i = 0; i < this.etiquetas.length; i++) {
-            etiquetasTexto += ` - ${this.etiquetas[i]}\n`;
+            etiquetasTexto += `- ${this.etiquetas[i]}\n`;
         }
     }
-    return `Gasto correspondiente a "${this.descripcion}" con valor ${this.valor} €.\n` +
+    return `Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €.\n` +
            `Fecha: ${new Date(this.fecha).toLocaleString()}\n` +
            `Etiquetas:\n${etiquetasTexto}`;
 };
