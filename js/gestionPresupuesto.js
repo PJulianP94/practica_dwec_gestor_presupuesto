@@ -80,6 +80,20 @@ CrearGasto.prototype.borrarEtiquetas = function(...etiquetasAEliminar) {
         }
     }
 };
+CrearGasto.prototype.ObtenerperiodoAgrupacion = function (periodo){
+if (periodo == dia)
+    {
+        
+    }
+if (periodo == mes)
+    {
+
+    }
+    if (periodo == año)
+    {
+
+    }
+}
 
 function listarGastos() {
     return gastos;
