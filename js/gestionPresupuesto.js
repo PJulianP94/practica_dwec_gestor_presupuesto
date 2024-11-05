@@ -80,23 +80,86 @@ CrearGasto.prototype.borrarEtiquetas = function(...etiquetasAEliminar) {
         }
     }
 };
-CrearGasto.prototype.ObtenerperiodoAgrupacion = function (periodo){
-if (periodo == dia)
-    {
-        
+CrearGasto.prototype.obtenerPeriodoAgrupacion = function(periodo) {
+    let fechaObjeto = new Date(this.fecha).toISOString();
+    
+    if (periodo === 'dia') {
+        return fechaObjeto.substring(0, 10);  // "YYYY-MM-DD"
     }
-if (periodo == mes)
-    {
+    if (periodo === 'mes') {
+        return fechaObjeto.substring(0, 7);  // "YYYY-MM"
+    }
+    if (periodo === 'anyo') {
+        return fechaObjeto.substring(0, 4);  // "YYYY"
+    }
+    
+    return ''; // Si el periodo no es válido, retornamos una cadena vacía
+};
 
-    }
-    if (periodo == año)
-    {
+function filtrarGastos(parametro) {
+    return gastos.filter(function(gasto) {
+        let resultado = true;
 
-    }
+        // Filtrar por fechaDesde
+        if (parametro.fechaDesde && new Date(gasto.fecha) < new Date(parametro.fechaDesde)) {
+            resultado = false;
+        }
+
+        // Filtrar por fechaHasta
+        if (parametro.fechaHasta && new Date(gasto.fecha) > new Date(parametro.fechaHasta)) {
+            resultado = false;
+        }
+
+        // Filtrar por valorMinimo
+        if (parametro.valorMinimo && gasto.valor < parametro.valorMinimo) {
+            resultado = false;
+        }
+
+        // Filtrar por valorMaximo
+        if (parametro.valorMaximo && gasto.valor > parametro.valorMaximo) {
+            resultado = false;
+        }
+
+        // Filtrar por descripcionContiene
+        if (parametro.descripcionContiene && !gasto.descripcion.toLowerCase().includes(parametro.descripcionContiene.toLowerCase())) {
+            resultado = false;
+        }
+
+        // Filtrar por etiquetasTiene
+        if (parametro.etiquetasTiene && parametro.etiquetasTiene.length > 0) {
+            let tieneEtiqueta = false;
+            for (let i = 0; i < parametro.etiquetasTiene.length; i++) {
+                if (gasto.etiquetas.some(function(etiqueta) {
+                    return etiqueta.toLowerCase() === parametro.etiquetasTiene[i].toLowerCase();
+                })) {
+                    tieneEtiqueta = true;
+                    break;
+                }
+            }
+            if (!tieneEtiqueta) {
+                resultado = false;
+            }
+        }
+
+        return resultado;
+    });
 }
 
-function listarGastos() {
-    return gastos;
+function agruparGastos(periodo = 'mes', etiquetas = [], fechaDesde, fechaHasta) {
+    // Filtramos los gastos usando los parámetros proporcionados
+    let gastosFiltrados = filtrarGastos({
+        fechaDesde: fechaDesde,
+        fechaHasta: fechaHasta,
+        etiquetasTiene: etiquetas.length > 0 ? etiquetas : undefined
+    });
+
+    // Agrupamos los gastos por el período
+    return gastosFiltrados.reduce(function(acc, gasto) {
+        let periodoAgrup = gasto.obtenerPeriodoAgrupacion(periodo);
+        acc[periodoAgrup] = acc[periodoAgrup] || 0;
+        acc[periodoAgrup] += gasto.valor;
+        return acc;
+    }, {});
 }
 
 function anyadirGasto(gasto) {
@@ -131,8 +194,8 @@ function calcularBalance() {
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
 export   {
-
-    listarGastos,
+    agruparGastos,
+    filtrarGastos,
     anyadirGasto,
     borrarGasto, 
     calcularTotalGastos,
