@@ -31,7 +31,7 @@ function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiqueta
 // Métodos del objeto Gasto en el prototype
 CrearGasto.prototype.mostrarGasto = function ()
 {
-return `Gasto correspondiente a ${this.descripcion} con valor: ${this.valor} €`;
+return `Gasto correspondiente a ${this.descripcion} con valornp ${this.valor} €`;
 }
 CrearGasto.prototype.actualizarDescripcion = function (nuevaDescripcion) 
 {
@@ -89,12 +89,17 @@ CrearGasto.prototype.obtenerPeriodoAgrupacion = function(periodo) {
     if (periodo === 'mes') {
         return fechaObjeto.substring(0, 7);  // "YYYY-MM"
     }
-    if (periodo === 'anyo') {
+    if (periodo === 'año') {
         return fechaObjeto.substring(0, 4);  // "YYYY"
     }
     
     return ''; // Si el periodo no es válido, retornamos una cadena vacía
 };
+
+function listarGastos() {
+    return gastos;
+}
+
 
 function filtrarGastos(parametro) {
     return gastos.filter(function(gasto) {
@@ -194,6 +199,7 @@ function calcularBalance() {
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
 export   {
+    listarGastos,
     agruparGastos,
     filtrarGastos,
     anyadirGasto,
