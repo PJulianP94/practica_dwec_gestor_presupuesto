@@ -25,14 +25,13 @@ gestionPresupuesto.anyadirGasto(gasto6);
 web.mostrarDatoEnId('gastos-totales', gestionPresupuesto.calcularTotalGastos());
 web.mostrarDatoEnId('balance-total', gestionPresupuesto.calcularBalance());
 
-let gastos = gestionPresupuesto.gastos || [];
+let gastos = gestionPresupuesto.listarGastos() || [];
 
 // Mostrar todos los gastos
 for (let i = 0; i < gastos.length; i++) {
-    web.mostrarGastoWeb('listado-gastos-completo', gestionPresupuesto.gastos[i]);
+    web.mostrarGastoWeb('listado-gastos-completo', gastos[i]);
 }
 
-// Filtrar y mostrar los gastos por diferentes criterios
 
 // Mostrar los gastos realizados en septiembre de 2021
 let gastosFiltradosSeptiembre = gestionPresupuesto.filtrarGastos({ fechaDesde: "2021-09-01", fechaHasta: "2021-09-30" });

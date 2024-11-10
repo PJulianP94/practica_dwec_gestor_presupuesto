@@ -31,7 +31,7 @@ function CrearGasto(descripcion = "", valor = 0, fecha = Date.now(), ...etiqueta
 // Métodos del objeto Gasto en el prototype
 CrearGasto.prototype.mostrarGasto = function ()
 {
-return `Gasto correspondiente a ${this.descripcion} con valornp ${this.valor} €`;
+return `Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €`;
 }
 CrearGasto.prototype.actualizarDescripcion = function (nuevaDescripcion) 
 {
