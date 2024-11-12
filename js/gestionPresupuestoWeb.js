@@ -1,4 +1,5 @@
 // gestionPresupuestoWeb.js
+import * as PresupuestoWeb from "./gestionPresupuesto.js"
 
 function mostrarDatoEnId(idElemento, valor) {
     let elemento = document.getElementById(idElemento);
@@ -8,49 +9,73 @@ function mostrarDatoEnId(idElemento, valor) {
 }
 
 function mostrarGastoWeb(idElemento, gasto) {
-    // Obtén el contenedor donde agregarás el gasto
     let contenedor = document.getElementById(idElemento);
-
-    // Crear el div principal para el gasto
     let divGasto = document.createElement('div');
     divGasto.classList.add('gasto');
 
-    // Crear el div para la descripción del gasto
+    // Mostrar descripción
     let divDescripcion = document.createElement('div');
     divDescripcion.classList.add('gasto-descripcion');
-    divDescripcion.textContent = gasto.descripcion; // Usar gasto.descripcion
-
-    // Crear el div para la fecha del gasto
+    divDescripcion.textContent = gasto.descripcion;
+    
+    // Mostrar fecha
     let divFecha = document.createElement('div');
     divFecha.classList.add('gasto-fecha');
-    divFecha.textContent = new Date(gasto.fecha).toLocaleDateString(); // Formatear fecha
-
-    // Crear el div para el valor del gasto
+    divFecha.textContent = new Date(gasto.fecha).toLocaleDateString();
+    
+    // Mostrar valor
     let divValor = document.createElement('div');
     divValor.classList.add('gasto-valor');
-    divValor.textContent = `${gasto.valor} €`; // Usar gasto.valor
+    divValor.textContent = `${gasto.valor} €`;
 
-    // Crear el div para las etiquetas del gasto
     let divEtiquetas = document.createElement('div');
     divEtiquetas.classList.add('gasto-etiquetas');
+    
+        for (let i  of gasto.etiquetas) {
+            let spanEtiqueta = document.createElement('span');
+            spanEtiqueta.classList.add('gasto-etiquetas-etiqueta');
+            spanEtiqueta.textContent = i;
+            
+            // manejador de evento para borrar la etiqueta
+            let manejadorBorrarEtiqueta = new BorrarEtiquetasHandle();
+            manejadorBorrarEtiqueta.gasto = gasto;
+            manejadorBorrarEtiqueta.etiqueta = gasto.etiquetas;
+            spanEtiqueta.addEventListener('click', manejadorBorrarEtiqueta);
+            
+            divEtiquetas.appendChild(spanEtiqueta);
+        }
+    
 
-    // Crear los elementos <span> para cada etiqueta
-    for (let etiqueta of gasto.etiquetas) {
-        let spanEtiqueta = document.createElement('span');
-        spanEtiqueta.classList.add('gasto-etiquetas-etiqueta');
-        spanEtiqueta.textContent = etiqueta; // Usar cada etiqueta
+    // Crear el botón de Editar
+    let botonEditar = document.createElement('button');
+    botonEditar.setAttribute("type", "button");
+    botonEditar.className = 'gasto-editar';
+    botonEditar.textContent = 'Editar';
+    
+    // manejador de evento para editar el gasto
+    let manejadorEditar = new EditarHandle();
+    manejadorEditar.gasto = gasto;
+    botonEditar.addEventListener('click', manejadorEditar);
+    
+    // Crear el botón de Borrar
+    let botonBorrar = document.createElement('button');
+    botonBorrar.setAttribute("type", "button")
+    botonBorrar.className = 'gasto-borrar';
+    botonBorrar.textContent = 'Borrar';
+    
+    let manejadorBorrar = new BorrarHandle();
+    manejadorBorrar.gasto = gasto;
+    botonBorrar.addEventListener('click', manejadorBorrar);
 
-        // Agregar el <span> al contenedor de etiquetas
-        divEtiquetas.appendChild(spanEtiqueta);
-    }
-
-    // Agregar los subelementos al div principal
+    // Añadimos todos los elementos al divGasto
     divGasto.appendChild(divDescripcion);
     divGasto.appendChild(divFecha);
     divGasto.appendChild(divValor);
     divGasto.appendChild(divEtiquetas);
+    divGasto.appendChild(botonEditar);
+    divGasto.appendChild(botonBorrar);
 
-    // Finalmente, agregar el divGasto al contenedor principal
+    // Añadimos el divGasto al contenedor
     contenedor.appendChild(divGasto);
 }
 
@@ -59,49 +84,115 @@ function mostrarGastoWeb(idElemento, gasto) {
   function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo) {
     let contenedor = document.getElementById(idElemento);
 
-    // Crear un div contenedor para toda la agrupación
     let divAgrupacion = document.createElement('div');
-    divAgrupacion.classList.add('agrupacion'); // Clase agrupacion añadida
+    divAgrupacion.className = 'agrupacion';
 
-    // Crear el encabezado con el texto esperado
     let header = document.createElement('h1');
-    header.textContent = 'Gastos agrupados por ' + periodo; // Asegúrate que esto coincide con el texto esperado
-    divAgrupacion.appendChild(header);  // Añadir el encabezado al contenedor de la agrupación
+    header.textContent = 'Gastos agrupados por ' + periodo; 
+    divAgrupacion.appendChild(header);
 
     // Bucle para recorrer cada elemento de la agrupación
     for (let i in agrup) {
         let value = agrup[i];
 
-        // Crear un div para cada agrupación, con la clase correcta de 'agrupacion-dato'
         let div = document.createElement('div');
-        div.classList.add('agrupacion-dato');  // Cambié la clase aquí
+        div.className = "agrupacion-dato";
 
-        // Crear el 'span' para la clave (año, mes, etc.)
         let claveSpan = document.createElement('span');
-        claveSpan.classList.add('agrupacion-dato-clave'); // Agregamos la clase correcta
-        claveSpan.textContent = i; // El periodo (año, mes, etc.)
+        claveSpan.className = 'agrupacion-dato-clave'; 
+        claveSpan.textContent = i;
 
-        // Crear el 'span' para el valor
         let valorSpan = document.createElement('span');
-        valorSpan.classList.add('agrupacion-dato-valor'); // Agregamos la clase correcta
+        valorSpan.classList.add('agrupacion-dato-valor');
         valorSpan.textContent = `${value} €`;
 
-        // Añadir los spans al div principal de la agrupación
         div.appendChild(claveSpan);
         div.appendChild(valorSpan);
 
-        // Añadir el div a la agrupación
         divAgrupacion.appendChild(div);
     }
 
-    // Finalmente, añadir el divAgrupacion al contenedor principal
     contenedor.appendChild(divAgrupacion);
 }
 
 
+function repintar() {
+    mostrarDatoEnId("presupuesto", PresupuestoWeb.mostrarPresupuesto());
+    mostrarDatoEnId("gastos-totales", PresupuestoWeb.calcularTotalGastos());
+    mostrarDatoEnId("balance-total", PresupuestoWeb.calcularBalance());
+    
+    let gastoscompletos = document.getElementById("listado-gastos-completo");
+    gastoscompletos.innerHTML = ""; // borramos los datos para insertar después 
+    mostrarGastoWeb("listado-gastos-completo", PresupuestoWeb.listarGastos());
+}
+
+function actualizarPrespuestoWeb() {
+    let respuesta = prompt("Introduce el presupuesto");
+    let nuevopresupuesto = parseInt(respuesta);
+    PresupuestoWeb.actualizarPresupuesto(nuevopresupuesto);
+    repintar(); // repintar para actualizar los datos
+}
+
+let boton = document.getElementById("actualizarpresupuesto");
+boton.addEventListener("click", actualizarPrespuestoWeb); // Se pasa la función sin paréntesis
+
+function nuevoGastoWeb() {
+    let descripcion = prompt("Introduce la descripción del gasto");
+    let valor = parseFloat(prompt("Introduce el valor del gasto"));
+    let fecha = prompt("Introduce la fecha del gasto (formato: yyyy-mm-dd)");
+    let etiquetasString = prompt("Introduce las etiquetas (separadas por comas)");
+    let etiquetas = etiquetasString.split(',');
+
+    let gasto = new CrearGasto(descripcion, valor, fecha, etiquetas);
+    anyadirGasto(gasto);
+
+    repintar(); 
+}
+
+let boton2 = document.getElementById("anyadirgasto");
+boton2.addEventListener("click", nuevoGastoWeb);
+
+function EditarHandle ()
+{
+    this.handleEvent = function()
+    {
+        let nuevaDescripcion = prompt("Introduce la nueva descripción del gasto");
+        let nuevoValor = parseFloat(prompt("Introduce el nuevo valor del gasto"));
+        let nuevaFecha = prompt("Introduce la nueva fecha del gasto (formato: yyyy-mm-dd):");
+        let nuevasEtiquetas= prompt("Introduce las nuevas etiquetas (separadas por comas):");
+        nuevasEtiquetas.split(",");
+    
+          this.gasto.actualizarDescripcion(nuevaDescripcion);
+          this.gasto.actualizarValor(nuevoValor);
+          this.gasto.actualizarFecha(nuevaFecha);
+          this.gasto.anyadirEtiquetas(nuevasEtiquetas);
+      
+          repintar();
+      }
+        
+    }
+
+function BorrarHandle()
+{
+    this.handleEvent = function()
+    {
+        PresupuestoWeb.borrarGasto(this.gasto.id);
+        repintar();
+    }
+}
+function BorrarEtiquetasHandle() {
+    this.handleEvent = function() 
+    {
+        this.gasto.borrarEtiquetas(this.etiquetas);
+        repintar();
+    }
+            
+       
+}
 
 
 export {
+
     mostrarDatoEnId,
     mostrarGastoWeb,
     mostrarGastosAgrupadosWeb
