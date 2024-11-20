@@ -189,6 +189,109 @@ function BorrarEtiquetasHandle() {
     }
 }
 
+function nuevoGastoWebFormulario() {
+    // Clonar el template del formulario
+    let plantillaFormulario = document.getElementById("formulario-template").content.cloneNode(true);
+    
+    // Obtener el formulario
+    var formulario = plantillaFormulario.querySelector("form");
+    
+    // Desactivar el botón para añadir un gasto mediante formulario
+    let botonFormulario = document.getElementById("anyadirgasto-formulario");
+    botonFormulario.disabled = true;
+
+    // Manejador para el evento submit
+    formulario.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevenir el envío del formulario
+
+        // Recoger los datos del formulario
+        let descripcion = formulario.querySelector("#descripcion").value;
+        let valor = parseFloat(formulario.querySelector("#valor").value);
+        let fecha = formulario.querySelector("#fecha").value;
+        let etiquetasString = formulario.querySelector("#etiquetas").value;
+        let etiquetas = etiquetasString.split(',');
+
+        // Crear un nuevo gasto
+        let gasto = new PresupuestoWeb.CrearGasto(descripcion, valor, fecha, ...etiquetas);
+        PresupuestoWeb.anyadirGasto(gasto);
+
+        // Repintar la interfaz
+        repintar();
+
+        // Volver a habilitar el botón de añadir gasto
+        botonFormulario.disabled = false;
+
+        // Eliminar el formulario
+        formulario.remove();
+    });
+
+    // Añadir un botón de cancelar para eliminar el formulario
+    let botonCancelar = formulario.querySelector(".cancelar");
+    botonCancelar.addEventListener("click", function () {
+        formulario.remove();
+        botonFormulario.disabled = false;
+    });
+
+    // Añadir el formulario a la página
+    document.getElementById("controlesprincipales").appendChild(plantillaFormulario);
+}
+
+// Asociar el botón "Añadir Gasto" al formulario
+let botonFormulario = document.getElementById("anyadirgasto-formulario");
+botonFormulario.addEventListener("click", nuevoGastoWebFormulario);
+
+function EditarHandleFormulario() {
+    this.handleEvent = function () {
+        // Clonar el template del formulario
+        let plantillaFormulario = document.getElementById("formulario-template").content.cloneNode(true);
+        let formulario = plantillaFormulario.querySelector("form");
+
+        // Rellenar los campos del formulario con los datos actuales del gasto
+        formulario.querySelector("#descripcion").value = this.gasto.descripcion;
+        formulario.querySelector("#valor").value = this.gasto.valor;
+        formulario.querySelector("#fecha").value = this.gasto.fecha;
+        formulario.querySelector("#etiquetas").value = this.gasto.etiquetas.join(", ");
+        
+        // Desactivar el botón de editar
+        let botonFormulario = document.getElementById("anyadirgasto-formulario");
+        botonFormulario.disabled = true;
+
+        // Manejador para el submit del formulario
+        formulario.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            // Obtener los nuevos datos
+            let descripcion = formulario.querySelector("#descripcion").value;
+            let valor = parseFloat(formulario.querySelector("#valor").value);
+            let fecha = formulario.querySelector("#fecha").value;
+            let etiquetasString = formulario.querySelector("#etiquetas").value;
+            let etiquetas = etiquetasString.split(',');
+
+            // Actualizar el gasto
+            this.gasto.actualizarDescripcion(descripcion);
+            this.gasto.actualizarValor(valor);
+            this.gasto.actualizarFecha(fecha);
+            this.gasto.anyadirEtiquetas(...etiquetas);
+
+            // Repintar la lista de gastos
+            repintar();
+
+            // Volver a activar el botón
+            botonFormulario.disabled = false;
+        });
+
+        // Manejador para el botón cancelar
+        let botonCancelar = formulario.querySelector(".cancelar");
+        botonCancelar.addEventListener("click", function () {
+            formulario.remove();
+            botonFormulario.disabled = false;
+        });
+
+        // Añadir el formulario a la página
+        document.getElementById("controlesprincipales").appendChild(plantillaFormulario);
+    };
+}
+
 export {
     mostrarDatoEnId,
     mostrarGastoWeb,
