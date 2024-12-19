@@ -12,7 +12,7 @@ function actualizarPresupuesto(valorNuevopresupuesto) {
         presupuesto = valorNuevopresupuesto;
         return presupuesto;
     } else {
-        console.log("El presupuesto es negativo");
+        alert("El presupuesto es negativo");
         return -1;
     }
 }
@@ -154,7 +154,7 @@ function agruparGastos(periodo = 'mes', etiquetas = [], fechaDesde, fechaHasta) 
     let gastosFiltrados = filtrarGastos({
         fechaDesde: fechaDesde,
         fechaHasta: fechaHasta,
-        etiquetasTiene: etiquetas.length > 0 ? etiquetas : undefined
+        etiquetasTiene: etiquetas.length > 0 ? etiquetas : []
     });
 
     return gastosFiltrados.reduce(function (acc, gasto) {
@@ -195,10 +195,22 @@ function calcularBalance() {
     return presupuesto - calcularTotalGastos();
 }
 
+function transformarListadoEtiquetas(listado)
+{
+   // Reemplazar los separadores comunes (.,:; espacio) por comas
+   const textoNormalizado = listado.replace(/[.,:;\s]+/g, ",");
+
+   // Dividir el texto por comas y eliminar elementos vacíos
+   const etiquetas = textoNormalizado.split(",").filter(etiqueta => etiqueta.trim() !== "");
+
+   return etiquetas;
+}
+
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
 export {
+    transformarListadoEtiquetas,
     listarGastos,
     agruparGastos,
     filtrarGastos,

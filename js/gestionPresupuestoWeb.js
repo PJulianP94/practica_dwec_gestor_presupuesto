@@ -49,7 +49,7 @@ function mostrarGastoWeb(idElemento, gasto) {
     // Crear el botón de Editar
     let botonEditar = document.createElement('button');
     botonEditar.setAttribute("type", "button");
-    botonEditar.className = 'gasto-editar';
+    botonEditar.className = 'gasto-editar-formulario';
     botonEditar.textContent = 'Editar';
 
     // Manejador de evento para editar el gasto
@@ -116,14 +116,26 @@ function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo) {
 
 // Función para repintar los datos de la página
 function repintar() {
+    console.log("Repintando...");
     mostrarDatoEnId("presupuesto", PresupuestoWeb.mostrarPresupuesto());
     mostrarDatoEnId("gastos-totales", PresupuestoWeb.calcularTotalGastos());
     mostrarDatoEnId("balance-total", PresupuestoWeb.calcularBalance());
 
     let gastoscompletos = document.getElementById("listado-gastos-completo");
-    gastoscompletos.innerHTML = ""; // borramos los datos para insertar después
-    PresupuestoWeb.listarGastos().forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
+    gastoscompletos.innerHTML = ""; // Limpiar el contenedor antes de agregar los elementos
+
+    // Verificar que la lista de gastos no está vacía
+    const gastos = PresupuestoWeb.listarGastos();
+    console.log("Lista de gastos:", gastos);
+    
+    if (gastos.length === 0) {
+        console.warn("No hay gastos para mostrar");
+    }
+
+    // Agregar los gastos al DOM
+    gastos.forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
 }
+
 
 // Función para actualizar el presupuesto
 function actualizarPrespuestoWeb() {
@@ -143,13 +155,22 @@ function nuevoGastoWeb() {
     let valor = parseFloat(prompt("Introduce el valor del gasto"));
     let fecha = prompt("Introduce la fecha del gasto (formato: yyyy-mm-dd)");
     let etiquetasString = prompt("Introduce las etiquetas (separadas por comas)");
-    let etiquetas = etiquetasString.split(',');
+
+    // Asegurarnos de que etiquetasString no sea null
+    if (etiquetasString === null) {
+        etiquetasString = '';  // Asignamos una cadena vacía si el valor es null
+    }
+
+    // Convertir las etiquetas en un array
+    let etiquetas = etiquetasString.split(',').map(etiqueta => etiqueta.trim());  // Trim para quitar espacios extras
 
     let gasto = new PresupuestoWeb.CrearGasto(descripcion, valor, fecha, ...etiquetas);
     PresupuestoWeb.anyadirGasto(gasto);
 
     repintar();
 }
+
+
 
 // Botón para añadir un nuevo gasto
 let boton2 = document.getElementById("anyadirgasto");
@@ -210,6 +231,11 @@ function nuevoGastoWebFormulario() {
         let fecha = formulario.querySelector("#fecha").value;
         let etiquetasString = formulario.querySelector("#etiquetas").value;
         let etiquetas = etiquetasString.split(',');
+
+        if (!descripcion || !valor || !fecha) {
+            console.error("Faltan datos en el formulario");
+            return;
+        }
 
         // Crear un nuevo gasto
         let gasto = new PresupuestoWeb.CrearGasto(descripcion, valor, fecha, ...etiquetas);
@@ -291,6 +317,44 @@ function EditarHandleFormulario() {
         document.getElementById("controlesprincipales").appendChild(plantillaFormulario);
     };
 }
+
+function filtrarGastosWeb(event) {
+    // Prevenir el envío del formulario y la recarga de la página
+    event.preventDefault();
+
+    // Recoger los datos del formulario
+    const formulario = document.getElementById("formulario-filtrado");
+    const valorMinimo = parseFloat(formulario["formulario-filtrado-valor-minimo"].value) || null;
+    const valorMaximo = parseFloat(formulario["formulario-filtrado-valor-maximo"].value) || null;
+    const etiquetasTexto = formulario["formulario-filtrado-etiquetas-tiene"].value;
+
+    // Procesar las etiquetas, si existen, usando transformarListadoEtiquetas
+    let etiquetasTiene = [];
+    if (etiquetasTexto.trim() !== "") {
+        etiquetasTiene = PresupuestoWeb.transformarListadoEtiquetas(etiquetasTexto);
+    }
+
+    // Crear el objeto con las opciones de filtrado
+    const opcionesFiltrado = {
+        valorMinimo: valorMinimo,
+        valorMaximo: valorMaximo,
+        etiquetasTiene: etiquetasTiene
+    };
+
+    // Llamar a la función filtrarGastos del paquete gestionPresupuesto.js
+    const gastosFiltrados = PresupuestoWeb.filtrarGastos(opcionesFiltrado);
+
+    // Actualizar la lista de gastos filtrados en la capa listado-gastos-completo
+    const capaListadoGastos = document.getElementById("listado-gastos-completo");
+    capaListadoGastos.innerHTML = ""; // Limpiar la capa antes de añadir los nuevos elementos
+
+    // Mostrar cada gasto usando la función mostrarGastoWeb
+    gastosFiltrados.forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
+}
+
+
+// Añadir la función como manejadora del evento submit del formulario
+document.getElementById("formulario-filtrado").addEventListener("submit", filtrarGastosWeb);
 
 export {
     mostrarDatoEnId,
