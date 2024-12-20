@@ -116,17 +116,14 @@ function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo) {
 
 // Función para repintar los datos de la página
 function repintar() {
-    console.log("Repintando...");
     mostrarDatoEnId("presupuesto", PresupuestoWeb.mostrarPresupuesto());
     mostrarDatoEnId("gastos-totales", PresupuestoWeb.calcularTotalGastos());
     mostrarDatoEnId("balance-total", PresupuestoWeb.calcularBalance());
 
     let gastoscompletos = document.getElementById("listado-gastos-completo");
-    gastoscompletos.innerHTML = ""; // Limpiar el contenedor antes de agregar los elementos
+    gastoscompletos.innerHTML = ""; // Limpiamos el contenedor antes de agregar los elementos
 
-    // Verificar que la lista de gastos no está vacía
     const gastos = PresupuestoWeb.listarGastos();
-    console.log("Lista de gastos:", gastos);
     
     if (gastos.length === 0) {
         console.warn("No hay gastos para mostrar");
@@ -259,7 +256,7 @@ function nuevoGastoWebFormulario() {
     });
 
     // Añadir el formulario a la página
-    document.getElementById("controlesprincipales").appendChild(plantillaFormulario);
+    document.getElementById("controlesprincipales").appendChild(formulario);
 }
 
 // Asociar el botón "Añadir Gasto" al formulario
@@ -314,41 +311,34 @@ function EditarHandleFormulario() {
         });
 
         // Añadir el formulario a la página
-        document.getElementById("controlesprincipales").appendChild(plantillaFormulario);
+        document.getElementById("controlesprincipales").appendChild(formulario);
     };
 }
 
 function filtrarGastosWeb(event) {
-    // Prevenir el envío del formulario y la recarga de la página
     event.preventDefault();
 
-    // Recoger los datos del formulario
     const formulario = document.getElementById("formulario-filtrado");
-    const valorMinimo = parseFloat(formulario["formulario-filtrado-valor-minimo"].value) || null;
-    const valorMaximo = parseFloat(formulario["formulario-filtrado-valor-maximo"].value) || null;
-    const etiquetasTexto = formulario["formulario-filtrado-etiquetas-tiene"].value;
-
-    // Procesar las etiquetas, si existen, usando transformarListadoEtiquetas
-    let etiquetasTiene = [];
-    if (etiquetasTexto.trim() !== "") {
-        etiquetasTiene = PresupuestoWeb.transformarListadoEtiquetas(etiquetasTexto);
-    }
+    const descripcion = formulario["formulario-filtrado-descripcion"].value.trim();
 
     // Crear el objeto con las opciones de filtrado
     const opcionesFiltrado = {
-        valorMinimo: valorMinimo,
-        valorMaximo: valorMaximo,
-        etiquetasTiene: etiquetasTiene
+        descripcionContiene: descripcion,
+        fechaDesde: formulario["formulario-filtrado-fecha-desde"].value,
+        fechaHasta: formulario["formulario-filtrado-fecha-hasta"].value,
+        valorMinimo: parseFloat(formulario["formulario-filtrado-valor-minimo"].value) || null,
+        valorMaximo: parseFloat(formulario["formulario-filtrado-valor-maximo"].value) || null,
+        etiquetasTiene: PresupuestoWeb.transformarListadoEtiquetas(
+            formulario["formulario-filtrado-etiquetas-tiene"].value
+        )
     };
 
-    // Llamar a la función filtrarGastos del paquete gestionPresupuesto.js
     const gastosFiltrados = PresupuestoWeb.filtrarGastos(opcionesFiltrado);
 
-    // Actualizar la lista de gastos filtrados en la capa listado-gastos-completo
+    // Mostrar los resultados filtrados
     const capaListadoGastos = document.getElementById("listado-gastos-completo");
-    capaListadoGastos.innerHTML = ""; // Limpiar la capa antes de añadir los nuevos elementos
+    capaListadoGastos.innerHTML = ""; // Limpiar antes de agregar
 
-    // Mostrar cada gasto usando la función mostrarGastoWeb
     gastosFiltrados.forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
 }
 
@@ -382,7 +372,6 @@ function cargarGastosWeb() {
         PresupuestoWeb.cargarGastos([]);
     }
 
-    // Después de cargar los gastos, actualizamos la vista llamando a repintar
     repintar();
 }
 
@@ -390,7 +379,7 @@ function cargarGastosWeb() {
 document.getElementById("guardar-gastos").addEventListener("click", guardarGastosWeb);
 document.getElementById("cargar-gastos").addEventListener("click", cargarGastosWeb);
 
-// Añadir la función como manejadora del evento submit del formulario
+// Añadimos la función como manejadora del evento submit del formulario
 document.getElementById("formulario-filtrado").addEventListener("submit", filtrarGastosWeb);
 
 export {

@@ -127,20 +127,14 @@ function filtrarGastos(parametro) {
             resultado = false;
         }
 
-        if (parametro.descripcionContiene && !gasto.descripcion.toLowerCase().includes(parametro.descripcionContiene.toLowerCase())) {
+        if (parametro.descripcionContiene && gasto.descripcion.toLowerCase().indexOf(parametro.descripcionContiene.toLowerCase()) === -1) {
             resultado = false;
         }
 
         if (parametro.etiquetasTiene && parametro.etiquetasTiene.length > 0) {
-            let tieneEtiqueta = false;
-            for (let i = 0; i < parametro.etiquetasTiene.length; i++) {
-                if (gasto.etiquetas.some(function (etiqueta) {
-                    return etiqueta.toLowerCase() === parametro.etiquetasTiene[i].toLowerCase();
-                })) {
-                    tieneEtiqueta = true;
-                    break;
-                }
-            }
+            let tieneEtiqueta = parametro.etiquetasTiene.some(etiqueta =>
+                gasto.etiquetas.some(gastoEtiqueta => gastoEtiqueta.toLowerCase() === etiqueta.toLowerCase())
+            );
             if (!tieneEtiqueta) {
                 resultado = false;
             }
@@ -149,6 +143,7 @@ function filtrarGastos(parametro) {
         return resultado;
     });
 }
+
 
 function agruparGastos(periodo = 'mes', etiquetas = [], fechaDesde, fechaHasta) {
     let gastosFiltrados = filtrarGastos({
