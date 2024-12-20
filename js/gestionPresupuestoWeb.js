@@ -352,6 +352,43 @@ function filtrarGastosWeb(event) {
     gastosFiltrados.forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
 }
 
+function guardarGastosWeb() {
+    // Obtenemos el listado de los gastos desde la función listarGastos
+    const gastos = PresupuestoWeb.listarGastos();
+
+    // Convertimos el listado de gastos en una cadena JSON
+    const gastosString = JSON.stringify(gastos);
+
+    // Almacenamos la cadena en localStorage con la clave 'GestorGastosDWEC'
+    localStorage.setItem('GestorGastosDWEC', gastosString);
+
+    // Mensaje opcional para confirmar que los gastos se han guardado
+    console.log("Gastos guardados correctamente en localStorage.");
+}
+
+// Función para cargar los gastos desde localStorage
+function cargarGastosWeb() {
+    // Intentamos obtener la cadena de gastos desde localStorage
+    const gastosString = localStorage.getItem('GestorGastosDWEC');
+
+    // Si existen gastos en localStorage, los parseamos y los cargamos
+    if (gastosString) {
+        const gastosCargados = JSON.parse(gastosString);
+
+        // Llamamos a la función cargarGastos con los datos cargados
+        PresupuestoWeb.cargarGastos(gastosCargados);
+    } else {
+        // Si no existen gastos, cargamos un array vacío
+        PresupuestoWeb.cargarGastos([]);
+    }
+
+    // Después de cargar los gastos, actualizamos la vista llamando a repintar
+    repintar();
+}
+
+// Asignamos las funciones como manejadores de eventos para los botones correspondientes
+document.getElementById("guardar-gastos").addEventListener("click", guardarGastosWeb);
+document.getElementById("cargar-gastos").addEventListener("click", cargarGastosWeb);
 
 // Añadir la función como manejadora del evento submit del formulario
 document.getElementById("formulario-filtrado").addEventListener("submit", filtrarGastosWeb);
