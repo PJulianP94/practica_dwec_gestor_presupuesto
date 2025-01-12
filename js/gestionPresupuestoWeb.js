@@ -67,6 +67,29 @@ function mostrarGastoWeb(idElemento, gasto) {
     manejadorBorrar.gasto = gasto;
     botonBorrar.addEventListener('click', manejadorBorrar);
 
+    // creamo el boton de borrar api
+    let botonBorrarApi = document.createElement ("button");
+    botonBorrarApi.setAttribute("type", "button");
+    botonBorrarApi.className = "gasto-borrar-api"
+    botonBorrarApi.textContent = "Borrar (Api)";
+
+    //manejador para el boton borrar Api
+    let manejadorBorrarApi = new BorrarHandleApi();
+    manejadorBorrarApi.gasto = gasto;
+    botonBorrarApi.addEventListener("click", manejadorBorrarApi);
+
+    // creamos boton de editar formulario
+    let botonEditarFormulario = document.createElement ("button");
+    botonEditarFormulario.setAttribute ("type", "button");
+    botonEditarFormulario.className = "gasto-editar-formulario";
+    botonEditarFormulario.textContent = "Editar (formulario)";
+
+    //manejador para editar formulario
+
+    let  manejadorEditarFormulario = new EditarHandleFormulario();
+    manejadorEditarFormulario.gasto = gasto;
+    botonEditarFormulario.addEventListener("click", manejadorEditarFormulario);
+
     // Añadimos todos los elementos al divGasto
     divGasto.appendChild(divDescripcion);
     divGasto.appendChild(divFecha);
@@ -74,6 +97,8 @@ function mostrarGastoWeb(idElemento, gasto) {
     divGasto.appendChild(divEtiquetas);
     divGasto.appendChild(botonEditar);
     divGasto.appendChild(botonBorrar);
+    divGasto.appendChild(botonBorrarApi);
+    divGasto.appendChild(botonEditarFormulario);
 
     // Añadimos el divGasto al contenedor
     contenedor.appendChild(divGasto);
@@ -381,6 +406,62 @@ document.getElementById("cargar-gastos").addEventListener("click", cargarGastosW
 
 // Añadimos la función como manejadora del evento submit del formulario
 document.getElementById("formulario-filtrado").addEventListener("submit", filtrarGastosWeb);
+
+function BorrarHandleApi () 
+{
+    this.handleEvent = async function() 
+    {
+        let usuarioInput = document.getElementById("nombre_usuario")
+        let usuario = usuarioInput.Value.trim();
+        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`, {method: "DELETE"})
+        let respuesta = await fetch (url)
+        try 
+        {
+            if (respuesta.ok)
+            {
+                CargarGastosApi;
+            }
+        }
+        catch (error)
+        {
+            alert("hubo un error al conectarse a la API")
+        }
+    }
+}
+function CargarGastosApi() {
+    let boton = document.getElementById("cargar-gastos-api");
+    boton.addEventListener("click", async function (evento) {
+        evento.preventDefault();
+        let usuarioInput = document.getElementById("nombre_usuario");
+        let usuario = usuarioInput.value.trim()
+
+        let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`, {method: "GET"});
+
+        try {
+            // Hacer la solicitud a la API
+            let resultado = await fetch(url);
+
+            if (resultado.ok) {
+                let datos = await resultado.json();
+                // Llamar a las funciones necesarias con los datos obtenidos
+                PresupuestoWeb.cargarGastos(datos);
+                repintar();
+            } else {
+                alert("Hubo un problema al cargar los datos. Por favor, inténtalo de nuevo.");
+            }
+        } catch (error) {
+            alert("Hubo un error al conectarse a la API.");
+        }
+    });
+}
+
+
+        
+
+
+
+
+
 
 export {
     mostrarDatoEnId,
