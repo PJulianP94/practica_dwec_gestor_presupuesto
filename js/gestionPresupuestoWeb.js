@@ -276,28 +276,28 @@ function nuevoGastoWebFormulario() {
     });
 
     //Manjerar el boton enviar API
-    botonEnviarApi = document.querySelector(".gasto-enviar-api")
-    botonEnviarApi.addEventListener("Click", async function(evento)
-    {
-        evento.preventDefault();
-        let usuarioInput = document.getElementById("nombre_usuario")
-        let usuario = usuarioInput.value.trim();
-        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`)
-        let respuesta = await fetch (url,{method: "POST"})
-        try 
-        {
-            if (respuesta.ok)
-            {
-                CargarGastosApi();
-            }
+    botonEnviarApi = formulario.querySelector(".gasto-enviar-api");
+botonEnviarApi.addEventListener("click", async function (evento) {
+    evento.preventDefault();
+    let usuarioInput = document.getElementById("nombre_usuario");
+    let usuario = usuarioInput.value.trim();
+
+    try {
+        let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`);
+        let respuesta = await fetch(url, { method: "POST" });
+
+        if (respuesta.ok) {
+            console.log("Datos enviados a la API con éxito");
+            CargarGastosApi(); // Asegúrate de que esta función está definida
+        } else {
+            alert("La conexión con la API falló.");
         }
-    catch (error)
-    {
-        alert("La conexion con la API ha fallado");
+    } catch (error) {
+        console.error("Error al enviar datos a la API:", error);
+        alert("La conexión con la API ha fallado.");
     }
-     
-    }
-)
+});
+
 
     // Añadir un botón de cancelar para eliminar el formulario
     let botonCancelar = formulario.querySelector(".cancelar");
