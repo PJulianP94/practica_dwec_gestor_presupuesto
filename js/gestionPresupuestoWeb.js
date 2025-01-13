@@ -266,12 +266,38 @@ function nuevoGastoWebFormulario() {
         // Repintar la interfaz
         repintar();
 
+        
+
         // Volver a habilitar el botón de añadir gasto
         botonFormulario.disabled = false;
 
         // Eliminar el formulario
         formulario.remove();
     });
+
+    //Manjerar el boton enviar API
+    botonEnviarApi = document.querySelector(".gasto-enviar-api")
+    botonEnviarApi.addEventListener("Click", async function(evento)
+    {
+        evento.preventDefault();
+        let usuarioInput = document.getElementById("nombre_usuario")
+        let usuario = usuarioInput.value.trim();
+        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`)
+        let respuesta = await fetch (url,{method: "POST"})
+        try 
+        {
+            if (respuesta.ok)
+            {
+                CargarGastosApi();
+            }
+        }
+    catch (error)
+    {
+        alert("La conexion con la API ha fallado");
+    }
+     
+    }
+)
 
     // Añadir un botón de cancelar para eliminar el formulario
     let botonCancelar = formulario.querySelector(".cancelar");
@@ -334,6 +360,32 @@ function EditarHandleFormulario() {
             formulario.remove();
             botonFormulario.disabled = false;
         });
+
+        // Manejador para el boton enviar api
+        let botonEnviarApi = formulario.querySelector(".gasto-enviar-api");
+        botonEnviarApi.addEventListener("click",  async function(evento)
+    {
+        evento.preventDefault();
+        let usuarioInput = document.getElementById("nombre_usuario")
+        let usuario = usuarioInput.value.trim();
+        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`);
+        let respuesta = await fetch (url, {method:"PUT"})
+        try 
+        {
+            if (respuesta.ok)
+                {
+                    CargarGastosApi();
+                }
+        }
+       
+        catch (error)
+        {
+            alert ("Hubo un error al conectar con la API");
+        }
+    })
+
+
+
 
         // Añadir el formulario a la página
         document.getElementById("controlesprincipales").appendChild(formulario);
@@ -413,8 +465,8 @@ function BorrarHandleApi ()
     {
         let usuarioInput = document.getElementById("nombre_usuario")
         let usuario = usuarioInput.Value.trim();
-        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`, {method: "DELETE"})
-        let respuesta = await fetch (url)
+        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`)
+        let respuesta = await fetch (url, {method: "DELETE"})
         try 
         {
             if (respuesta.ok)
@@ -435,11 +487,11 @@ function CargarGastosApi() {
         let usuarioInput = document.getElementById("nombre_usuario");
         let usuario = usuarioInput.value.trim()
 
-        let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`, {method: "GET"});
+        let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`);
 
         try {
             // Hacer la solicitud a la API
-            let resultado = await fetch(url);
+            let resultado = await fetch(url, {method: "GET"});
 
             if (resultado.ok) {
                 let datos = await resultado.json();
