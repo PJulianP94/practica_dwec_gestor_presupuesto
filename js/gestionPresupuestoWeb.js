@@ -275,7 +275,7 @@ function nuevoGastoWebFormulario() {
         formulario.remove();
     });
 
-    //Manjerar el boton enviar API
+    //Manejrar el boton enviar API
     botonEnviarApi = formulario.querySelector(".gasto-enviar-api");
 botonEnviarApi.addEventListener("click", async function (evento) {
     evento.preventDefault();
@@ -464,7 +464,7 @@ function BorrarHandleApi ()
     this.handleEvent = async function() 
     {
         let usuarioInput = document.getElementById("nombre_usuario")
-        let usuario = usuarioInput.Value.trim();
+        let usuario = usuarioInput.value.trim();
         let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`)
         let respuesta = await fetch (url, {method: "DELETE"})
         try 
@@ -480,10 +480,8 @@ function BorrarHandleApi ()
         }
     }
 }
-function CargarGastosApi() {
-    let boton = document.getElementById("cargar-gastos-api");
-    boton.addEventListener("click", async function (evento) {
-        evento.preventDefault();
+async function CargarGastosApi() {
+
         let usuarioInput = document.getElementById("nombre_usuario");
         let usuario = usuarioInput.value.trim()
 
@@ -504,17 +502,11 @@ function CargarGastosApi() {
         } catch (error) {
             alert("Hubo un error al conectarse a la API.");
         }
-    });
-}
+    };
 
-
-        
-
-
-
-
-
-
+    let BotonCargarApi = document.getElementById("cargar-gastos-api");
+    BotonCargarApi.addEventListener("click", CargarGastosApi());
+    
 export {
     mostrarDatoEnId,
     mostrarGastoWeb,
