@@ -471,7 +471,7 @@ function BorrarHandleApi ()
         {
             if (respuesta.ok)
             {
-                CargarGastosApi;
+                CargarGastosApi();
             }
         }
         catch (error)
@@ -505,7 +505,7 @@ async function CargarGastosApi() {
     };
 
     let BotonCargarApi = document.getElementById("cargar-gastos-api");
-    BotonCargarApi.addEventListener("click", CargarGastosApi());
+    BotonCargarApi.addEventListener("click", CargarGastosApi);
     
 export {
     mostrarDatoEnId,
