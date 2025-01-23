@@ -363,18 +363,18 @@ function EditarHandleFormulario() {
 
         // Manejador para el boton enviar api
         let botonEnviarApi = formulario.querySelector(".gasto-enviar-api");
-        botonEnviarApi.addEventListener("click",  async function(evento)
+        botonEnviarApi.addEventListener("click",  async (evento) =>
     {
         evento.preventDefault();
         let usuarioInput = document.getElementById("nombre_usuario")
         let usuario = usuarioInput.value.trim();
-        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`);
+        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.gastoId}`);
         let respuesta = await fetch (url, {method:"PUT"})
         try 
         {
             if (respuesta.ok)
                 {
-                    CargarGastosApi();
+                    CargarGastosApi;
                 }
         }
        
@@ -471,7 +471,7 @@ function BorrarHandleApi ()
         {
             if (respuesta.ok)
             {
-                CargarGastosApi();
+                CargarGastosApi;
             }
         }
         catch (error)
