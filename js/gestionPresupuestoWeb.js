@@ -369,12 +369,13 @@ function EditarHandleFormulario() {
         let usuarioInput = document.getElementById("nombre_usuario")
         let usuario = usuarioInput.value.trim();
         let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.gastoId}`);
-        let respuesta = await fetch (url, {method:"PUT"})
         try 
         {
+        let respuesta = await fetch (url, {method:"PUT"})
+      
             if (respuesta.ok)
                 {
-                    CargarGastosApi;
+                    CargarGastosApi();
                 }
         }
        
@@ -471,7 +472,7 @@ function BorrarHandleApi ()
         {
             if (respuesta.ok)
             {
-                CargarGastosApi;
+                CargarGastosApi();
             }
         }
         catch (error)
