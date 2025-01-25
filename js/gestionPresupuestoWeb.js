@@ -517,21 +517,36 @@ function BorrarHandleApi ()
     {
         let usuarioInput = document.getElementById("nombre_usuario")
         let usuario = usuarioInput.value.trim();
-        let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.id}`)
-        let respuesta = await fetch (url, {method: "DELETE"})
-        try 
-        {
-            if (respuesta.ok)
-            {
-                CargarGastosApi();
-            }
-        }
-        catch (error)
-        {
-            alert("hubo un error al conectarse a la API")
-        }
+        let gastoId = this.gasto.gastoId;
+
+    if (!gastoId) {
+        alert("El ID del gasto no es válido.");
+        return;
     }
+
+    try {
+        let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${gastoId}`);
+        
+        // Hacer la solicitud DELETE
+        let respuesta = await fetch(url, {
+            method: "DELETE",
+        });
+
+        // Manejar la respuesta
+        if (respuesta.ok) {
+            alert("Gasto eliminado correctamente.");
+            CargarGastosApi();
+        } else {
+            alert("La conexión con la API falló.");
+        }
+    } catch (error)
+    {
+        alert("Hubo un error al conectar con la API");
+    }
+    
+};
 }
+
 async function CargarGastosApi() {
 
         let usuarioInput = document.getElementById("nombre_usuario");
