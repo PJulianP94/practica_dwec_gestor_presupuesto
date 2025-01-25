@@ -275,22 +275,47 @@ function nuevoGastoWebFormulario() {
         formulario.remove();
     });
 
-    //Manejrar el boton enviar API
+    //Manejar el boton enviar API
     botonEnviarApi = formulario.querySelector(".gasto-enviar-api");
 botonEnviarApi.addEventListener("click", async function (evento) {
     evento.preventDefault();
     let usuarioInput = document.getElementById("nombre_usuario");
     let usuario = usuarioInput.value.trim();
+    let descripcionInput = document.getElementById("descripcion").value.trim();
+    let valorInput = parseFloat(document.getElementById("valor").value);
+    let fechaInput = document.getElementById("fecha").value.trim();
+    let etiquetasInput = document.getElementById("etiquetas").value;
+
+    // Convertir las etiquetas a un formato adecuado
+    let etiquetas = transformarListadoEtiquetas(etiquetasInput);
+    let datos = 
+    {
+        descripcion: descripcionInput,
+        valor: valorInput,
+        fecha: fechaInput,
+        etiquetas: etiquetas
+    }
 
     try {
         let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}`);
-        let respuesta = await fetch(url, { method: "POST" });
+        let respuesta = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos), // Enviar los datos en formato JSON
+        });
 
+        // Manejar la respuesta
         if (respuesta.ok) {
-            console.log("Datos enviados a la API con éxito");
-            CargarGastosApi(); // Asegúrate de que esta función está definida
+            console.log("Datos enviados a la API con éxito:", datos);
+            alert("Gasto añadido correctamente.");
+
+            // Cargar los gastos actualizados desde la API
+            CargarGastosApi();
         } else {
             alert("La conexión con la API falló.");
+            console.error("Error al enviar datos:", respuesta.statusText);
         }
     } catch (error) {
         console.error("Error al enviar datos a la API:", error);
@@ -368,22 +393,48 @@ function EditarHandleFormulario() {
         evento.preventDefault();
         let usuarioInput = document.getElementById("nombre_usuario")
         let usuario = usuarioInput.value.trim();
+        let gastoId = this.gasto.gastoId; // Asumimos que `this.gasto.gastoId` es el ID del gasto a actualizar
+        let descripcionInput = document.getElementById("descripcion").value.trim();
+        let valorInput = parseFloat(document.getElementById("valor").value);
+        let fechaInput = document.getElementById("fecha").value.trim();
+        let etiquetasInput = document.getElementById("etiquetas").value;
         let url = new URL (`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${this.gasto.gastoId}`);
-        try 
-        {
-        let respuesta = await fetch (url, {method:"PUT"})
-      
-            if (respuesta.ok)
-                {
-                    CargarGastosApi();
-                }
+        let datos = {
+            descripcion: descripcionInput,
+            valor: valorInput,
+            fecha: fechaInput,
+            etiquetas: etiquetas,
+        };
+    
+        try {
+            // Crear la URL con el usuario y el ID del gasto
+            let url = new URL(`https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${usuario}/${gastoId}`);
+            
+            // Hacer la solicitud PUT
+            let respuesta = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(datos), // Enviar los datos actualizados en formato JSON
+            });
+    
+            // Manejar la respuesta
+            if (respuesta.ok) {
+                console.log("Datos actualizados con éxito:", datos);
+                alert("Gasto actualizado correctamente.");
+    
+                // Cargar los gastos actualizados desde la API
+                CargarGastosApi(); // Asegúrate de que esta función esté definida correctamente
+            } else {
+                alert("La conexión con la API falló.");
+                console.error("Error al actualizar los datos:", respuesta.statusText);
+            }
+        } catch (error) {
+            console.error("Error al actualizar datos en la API:", error);
+            alert("Hubo un error al conectar con la API");
         }
-       
-        catch (error)
-        {
-            alert ("Hubo un error al conectar con la API");
-        }
-    })
+    });
 
 
 
